@@ -37,6 +37,8 @@ try {
  await page.getByRole('button',{name:'Kembali sebagai anggota'}).click();
  // New household, persisted onboarding, check-in, and deletion.
  await page.getByRole('button',{name:'Rumah tangga baru'}).click();
+ await page.keyboard.press('Escape');await page.getByRole('dialog').waitFor({state:'hidden'});
+ await page.getByRole('button',{name:'Rumah tangga baru'}).click();
  await page.getByLabel('Nama panggilan rumah tangga').fill('Keluarga Uji');
  await page.getByLabel('Total dana yang langsung bisa dipakai (Rp)').fill('2000000');
  await page.getByRole('button',{name:'Lanjut',exact:true}).click();
@@ -57,8 +59,7 @@ try {
  await page.screenshot({path:'artifacts/mobile.png',fullPage:true});
  await page.getByRole('button',{name:'Buka menu'}).click();
  await page.locator('.sidebar-bottom').getByRole('button',{name:'Data & pengaturan'}).click();
- // Close mobile menu after selecting settings.
- await page.getByRole('button',{name:'Buka menu'}).click();
+ assert.equal(await page.getByRole('button',{name:'Buka menu'}).getAttribute('aria-expanded'),'false','Settings closes the mobile menu');
  const downloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'Ekspor semua data'}).click();assert.equal((await downloadPromise).suggestedFilename(),'kasmusim-data.json');
  page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Hapus semua data',exact:true}).click();
  await page.getByRole('heading',{name:'Mulai dari uang yang ada hari ini.'}).waitFor();
