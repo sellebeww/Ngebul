@@ -19,7 +19,7 @@ export default function App(){
  useEffect(()=>{try{const raw=localStorage.getItem(KEY);if(raw){const parsed=JSON.parse(raw);if(!Array.isArray(parsed))throw Error();setHouseholds(parsed.map(capture));}else setHouseholds(makeSeeds());}catch{setStorageError('Data lokal tidak dapat dibaca. Salinan lama tidak ditimpa; ekspor atau periksa penyimpanan peramban.');}setReady(true);},[]);
  useEffect(()=>{if(ready&&!storageError)try{localStorage.setItem(KEY,JSON.stringify(households));}catch{setStorageError('Penyimpanan penuh atau tidak diizinkan. Perubahan hanya ada di sesi ini; ekspor sebelum menutup.');}},[households,ready,storageError]);
  useEffect(()=>{if(toast){const id=setTimeout(()=>setToast(''),4500);return()=>clearTimeout(id);}},[toast]);
- useEffect(()=>{if(!modal)return;const onKey=(e:KeyboardEvent)=>{if(e.key==='Escape')setModal(null);};document.addEventListener('keydown',onKey);return()=>document.removeEventListener('keydown',onKey);},[modal]);
+ useEffect(()=>{if(!modal)return;const onKey=(e:KeyboardEvent)=>{if(e.key==='Escape'&&!e.isComposing)setModal(null);};document.addEventListener('keydown',onKey);return()=>document.removeEventListener('keydown',onKey);},[modal]);
  const original=households.find(h=>h.id===selected)||households[0];
  const start=original?.fictional?DEMO_DATE:todayJakarta();
  const h=useMemo(()=>original?scenarioHousehold(original,scenario,start):undefined,[original,scenario,start]);

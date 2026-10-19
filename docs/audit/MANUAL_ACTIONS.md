@@ -11,8 +11,8 @@ Hanya hal yang tidak bisa diputuskan atau dikerjakan oleh agent. Tidak ada secre
 
 ## 1. Tinjau dan gabungkan branch audit (±15 menit)
 **Kenapa:** semua perubahan ada di branch lokal `chore/audit-20261019`. Agent tidak melakukan merge ke `main`.
+Dari folder proyek:
 ```sh
-cd /Users/jgo/Documents/CODING/KasMusim
 git log --oneline main..chore/audit-20261019
 git diff main..chore/audit-20261019 -- . ':!package-lock.json'
 npm ci && npm test && npm run build
