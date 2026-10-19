@@ -1,0 +1,41 @@
+import {visibleHouseholds} from './privacy';
+import { describe,it,expect } from 'vitest';
+import {makeSeeds,DEMO_DATE,scenarioHousehold} from './seed';
+import {addDays} from './dates';
+import {project,structural,simulate,widen,calibrate,warningOutcome,order,freshness,PRODUCT_NOTE} from './engine';
+import {compareModes,metrics} from './evaluation';
+const date=DEMO_DATE;
+const base=()=>{const h=makeSeeds()[0];h.incomes=[];h.variables=[];h.obligations=[{...h.obligations[0],amount:100,due:addDays(date,2),repeatDays:undefined}];h.funds=[{id:'f',kind:'tunai',amount:100,available:'segera'}];return h;};
+describe('Projection et garde-fous',()=>{
+ it('applique une obligation exactement à échéance',()=>{const p=project(base(),date);expect(p.days[1].balance).toBe(100);expect(p.days[2].balance).toBe(0);});
+ it('ignore les fonds verrouillés',()=>{const h=base();h.funds[0].available='terkunci';expect(project(h,date).payments[0].covered).toBe(false);});
+ it('libère les fonds datés',()=>{const h=base();h.funds[0].available='setelah_tanggal';h.funds[0].date=addDays(date,2);expect(project(h,date).payments[0].covered).toBe(true);});
+ it('détecte une arrivée tardive',()=>{const h=base();h.funds=[];h.incomes=[{...makeSeeds()[0].incomes[0],range:{min:100,usual:100,max:100},arrivalStart:date,arrivalEnd:addDays(date,5),repeatDays:undefined}];expect(project(h,date).payments[0].covered).toBe(false);expect(project(h,date,'optimistic').payments[0].covered).toBe(true);});
+ it('conservatif plus prudent que scénario habituel',()=>{const h=makeSeeds()[1];expect(project(h,date).runway).toBeLessThanOrEqual(project(h,date,'usual').runway);});
+ it('runway avant premier échec essentiel',()=>{const h=base();h.funds[0].amount=99;expect(project(h,date).runway).toBe(2);});
+ it('besoins essentiels avant pénalités',()=>{const h=makeSeeds()[0];const a=h.obligations[0],b={...h.obligations[4],penalty:{kind:'rp' as const,value:10000}};expect(order(a,b)).toBeLessThan(0);});
+ it('what-if améliore une insuffisance temporaire',()=>{const h=scenarioHousehold(makeSeeds()[1],'S4',date);expect(project(h,date,'conservative',{variableReduction:.5,deferId:'social',deferDays:9}).runway).toBeGreaterThan(project(h,date).runway);});
+ it('label seulement quand revenus habituels insuffisants',()=>{expect(structural(makeSeeds()[0],date).flagged).toBe(false);expect(structural(makeSeeds()[4],date).flagged).toBe(true);});
+ it('réduire ou déplacer ne supprime jamais le label',()=>{const h=makeSeeds()[4];const a=structural(h,date);for(const n of [0,.5,1])expect(structural(h,date,{variableReduction:n,deferId:'school',deferDays:90})).toEqual(a);});
+ it('seul un revenu ajouté dans horizon peut combler le manque',()=>{const h=makeSeeds()[4];expect(structural(h,date,{extraIncome:99999999,extraDate:date}).flagged).toBe(false);expect(structural(h,date,{extraIncome:99999999,extraDate:addDays(date,100)}).flagged).toBe(true);});
+ it('données anciennes élargissent la plage',()=>{const r={min:100,usual:200,max:300};expect(widen(r,true).min).toBeLessThan(r.min);expect(widen(r,true).max).toBeGreaterThan(r.max);expect(freshness(scenarioHousehold(makeSeeds()[0],'S8',date),date).stale).toBe(true);});
+ it('seed reproductible',()=>{const h=base();expect(simulate(h,date,{},20,12)).toEqual(simulate(h,date,{},20,12));});
+ it('propose une calibration après réalisations hors plage',()=>{expect(calibrate(makeSeeds()[5])[0].suggestion).not.toBeNull();});
+ it('mesure anticipation et fausses alertes sans deviner les observations futures',()=>{expect(warningOutcome(date,addDays(date,5),addDays(date,6)).leadDays).toBe(5);expect(warningOutcome(date,addDays(date,5),addDays(date,5)).falseAlarm).toBe(true);expect(warningOutcome(date,addDays(date,5)).resolved).toBe(false);});
+ it('aucun conseil de prêt dans résultats',()=>{expect(JSON.stringify(project(makeSeeds()[4],date))+PRODUCT_NOTE).not.toMatch(/ajukan pinjaman|pinjol|gadai/i);});
+ it('S1 sans alerte et S3 école non couverte',()=>{expect(project(makeSeeds()[0],date).payments.every(p=>p.covered)).toBe(true);expect(project(makeSeeds()[2],date).payments.find(p=>p.obligationId==='school')?.covered).toBe(false);});
+ it('S6 épuise les réserves après plusieurs semaines',()=>{const p=project(makeSeeds()[3],date);expect(p.runway).toBeGreaterThan(28);expect(p.runway).toBeLessThan(84);});
+ it('comparaison ne modifie pas les données',()=>{const h=makeSeeds()[1],before=JSON.stringify(h);expect(compareModes(h,date)).toHaveLength(3);expect(JSON.stringify(h)).toBe(before);});
+ it('métriques n’incluent pas les semaines avant essai',()=>{expect(metrics(makeSeeds()[0],date).activeWeeks).toBeLessThanOrEqual(8);});
+});
+describe('Snapshots et limites',()=>{
+ it('exclut les réalisations sans prévision préalable',()=>{const h=makeSeeds()[1];h.actuals=h.actuals.map(a=>({...a,snapshot:undefined}));expect(compareModes(h,date).every(m=>m.observations===0)).toBe(true);});
+ it('ne peut pas noter une prévision faite après les événements',()=>{const h=makeSeeds()[1];h.actuals=h.actuals.map(a=>({...a,snapshot:{...a.snapshot!,asOf:addDays(a.date,1)}}));expect(compareModes(h,date)[2].observations).toBe(0);});
+ it('conserve le manque structurel malgré les réserves',()=>{const h=makeSeeds()[4];h.funds[0].amount=100000000;expect(structural(h,date).flagged).toBe(true);});
+ it('ne dépense pas les fonds datés avant leur disponibilité',()=>{const h=base();h.funds[0]={...h.funds[0],available:'setelah_tanggal',date:addDays(date,3)};expect(project(h,date).payments[0].shortfall).toBe(100);});
+ it('respecte le plancher des dépenses variables',()=>{const h=base();h.variables=[{id:'v',name:'test',weekly:{min:70,usual:140,max:210},floor:70}];expect(project(h,date,'usual',{variableReduction:1},1).days[0].balance).toBe(90);});
+ it('S4 couvre toutes les obligations après report de neuf jours',()=>{const h=scenarioHousehold(makeSeeds()[1],'S4',date);expect(project(h,date,'conservative',{variableReduction:.5,deferId:'social',deferDays:9}).shortfall).toBe(0);});
+ it('ne reporte pas une obligation non reportable',()=>{const h=base();expect(project(h,date,'usual',{deferId:h.obligations[0].id,deferDays:10}).payments[0].due).toBe(addDays(date,2));});
+});
+
+it("Pendamping hanya melihat dan mengekspor keluarga yang mengizinkan",()=>{const h=makeSeeds();h[0].companionConsent=true;expect(visibleHouseholds(h,"Pendamping").map(x=>x.id)).toEqual([h[0].id]);expect(visibleHouseholds(h,"Anggota")).toHaveLength(6);});
