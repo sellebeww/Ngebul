@@ -179,7 +179,7 @@ Penyimpanan localStorage tidak dienkripsi dan tidak disinkronkan. Data hanya ter
 
 Ketersediaan dana, pengeluaran, dan prioritas berasal dari pengguna; perubahan realisasi tidak otomatis merekonsiliasi saldo rekening. Pengeluaran fleksibel memakai nilai biasa dan dibagi rata per hari; ketidakpastiannya belum disimulasikan. Denda dan masa tenggang disederhanakan, pembayaran parsial dan jadwal bulanan kalender belum didukung. Riwayat seed adalah episode sintetis, bukan bukti manfaat. Evaluasi realisasi tanpa snapshot diberi nol observasi pembanding, bukan disimpulkan tidak ada keterlambatan. Validasi manual data dan protokol tetap diperlukan sebelum 5–10 rumah tangga nyata mulai.
 
-Tidak ada pengiriman email/pesan, layanan keuangan, rekomendasi pinjaman, atau koneksi rekening. Situs dijalankan lokal; tidak dipublikasikan ke layanan eksternal.
+Tidak ada pengiriman email/pesan, layanan keuangan, rekomendasi pinjaman, atau koneksi rekening. Situs dijalankan lokal; tidak dipublikasikan ke layanan eksternal. `next.config.ts` mengirim Content-Security-Policy (`connect-src 'self'`, `frame-ancestors 'none'`) dan header keamanan lain, sehingga peramban menolak koneksi ke pihak ketiga dan penyematan dalam iframe. Header ini hanya berlaku saat dijalankan dengan `next dev`/`next start`, bukan bila diekspor sebagai berkas statis.
 
 ## Verifikasi implementasi
 
