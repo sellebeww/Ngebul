@@ -1,5 +1,5 @@
 import { CONFIG } from './config';
-import { daysBetween, addDays } from './dates';
+import { daysBetween } from './dates';
 import { calibrate, project, structural, warningOutcome } from './engine';
 import type { Household } from './types';
 export function compareModes(h:Household,reference:string) {

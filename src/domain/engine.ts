@@ -1,6 +1,6 @@
 import { CONFIG } from './config';
 import { addDays, daysBetween } from './dates';
-import type { Case, Changes, Household, Income, Obligation, Payment, Projection, Range } from './types';
+import type { Case, Changes, Household, Obligation, Payment, Projection, Range } from './types';
 export const essential = (o: Obligation) => ['makan','sewa','listrik','air','obat','sekolah'].includes(o.category);
 export const penalty = (o: Obligation) => o.penalty.kind === 'rp' ? o.penalty.value : o.amount * o.penalty.value / 100;
 export function order(a: Obligation, b: Obligation, essentialsFirst = true) {

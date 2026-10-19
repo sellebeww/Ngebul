@@ -8,7 +8,7 @@ export default function Chart({base,usual,band}:{base:Projection;usual:Projectio
  const line=(values:number[])=>values.map((v,i)=>`${i?'L':'M'}${x(i)},${y(v)}`).join(' ');
  return <div className="chart-wrap"><svg viewBox="0 0 880 245" role="img" aria-label="Proyeksi saldo 5 minggu. Garis hijau konservatif, garis putus-putus biasa, pita rentang simulasi.">
  {[0,.5,1].map(q=>{const v=min+(max-min)*q;return <g key={q}><line x1="64" x2="850" y1={y(v)} y2={y(v)} stroke="#e8ece7" strokeDasharray="4 5"/><text x="0" y={y(v)+4} fontSize="11" fill="#758078">{compact(v)}</text></g>;})}
- <path d={`${line(r.map(v=>v.high))} ${r.map((v,i)=>`L${x(r.length-1-i)},${y(r[r.length-1-i].low)}`).join(' ')} Z`} fill="#dce9d5" opacity=".75"/>
+ <path d={`${line(r.map(v=>v.high))} ${r.map((_,i)=>`L${x(r.length-1-i)},${y(r[r.length-1-i].low)}`).join(' ')} Z`} fill="#dce9d5" opacity=".75"/>
  <line x1="64" x2="850" y1={y(0)} y2={y(0)} stroke="#b98163" strokeDasharray="3 4"/>
  <path d={line(b.map(v=>v.balance))} fill="none" stroke="#9ba990" strokeWidth="2" strokeDasharray="5 5"/>
  <path d={line(a.map(v=>v.balance))} fill="none" stroke="#496846" strokeWidth="3" strokeLinejoin="round"/>
