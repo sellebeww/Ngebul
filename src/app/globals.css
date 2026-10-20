@@ -134,3 +134,18 @@ h1{font-weight:700;letter-spacing:-.03em}
 .lp-close-mark{display:block;width:120px;height:auto;margin:0 auto 24px}
 .lp-foot img{display:block;height:auto}
 @media(max-width:640px){.lp-brand img:first-child{width:38px}.lp-brand img:last-child{width:88px}}
+
+/* Profile motion: scroll reveal (see Reveal.tsx), highlight sweep, floating mark. */
+.rv .rv-item{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1) var(--d,0ms),transform .7s cubic-bezier(.2,.7,.2,1) var(--d,0ms)}
+.rv .rv-item.in{opacity:1;transform:none}
+.lp em{background-repeat:no-repeat;background-position:0 100%;background-size:100% 100%}
+.lp-hero em{animation:lp-hl .9s .55s cubic-bezier(.2,.7,.2,1) both}
+.rv .lp-display:not(.in) em{background-size:0 100%}.lp-display em{transition:background-size .9s .35s cubic-bezier(.2,.7,.2,1)}
+@keyframes lp-hl{from{background-size:0 100%}to{background-size:100% 100%}}
+.lp-close-mark{animation:lp-float 4.5s ease-in-out infinite}
+@keyframes lp-float{50%{transform:translateY(-10px) rotate(-2deg)}}
+.rv .lp-close-mark.rv-item{transition-property:opacity;animation:none}.rv .lp-close-mark.in{animation:lp-float 4.5s ease-in-out infinite}
+.lp .button svg{transition:transform .2s}.lp .button:hover svg{transform:translateX(3px)}
+.lp-path-grid article,.lp-audience article{transition:background-color .25s}
+.back-link{gap:6px;min-height:36px;padding:6px 12px;font-size:13px;white-space:nowrap}
+@media(max-width:700px){.back-link span{display:none}.back-link{padding:6px 9px}}

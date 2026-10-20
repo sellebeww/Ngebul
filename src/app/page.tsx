@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import Chart from '@/components/Chart';
+import Reveal from '@/components/Reveal';
 import { CONFIG } from '@/domain/config';
 import { PRODUCT_NOTE, project, simulate } from '@/domain/engine';
 import { DEMO_DATE, makeSeeds } from '@/domain/seed';
@@ -34,6 +35,7 @@ const faq=[
 ];
 export default function Profile(){
  return <div className="lp">
+ <Reveal/>
  <a className="skip-link" href="#isi">Langsung ke konten</a>
  <header className="lp-head"><div className="lp-wrap lp-head-row">
   <Link href="/" className="lp-brand" aria-label="Ngebul, beranda"><img src="/brand/ngebul-mark.png" alt="" width={48} height={43}/><img src="/brand/ngebul-wordmark.png" alt="" width={112} height={32}/></Link>
