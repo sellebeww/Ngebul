@@ -3,7 +3,7 @@ import { daysBetween } from './dates';
 import { calibrate, project, structural, warningOutcome } from './engine';
 import type { Household } from './types';
 export function compareModes(h:Household,reference:string) {
- return ['Catatan bulanan','Rata-rata bertanggal','KasMusim'].map((name,mode)=>{
+ return ['Catatan bulanan','Rata-rata bertanggal','Ngebul'].map((name,mode)=>{
  let detected=0,falseAlarms=0,leadTotal=0,exposedFines=0,observations=0;
  for(const a of h.actuals) {
   const saved=a.snapshot;

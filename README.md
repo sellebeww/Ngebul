@@ -1,8 +1,18 @@
-# KasMusim
+# Ngebul
 
 MVP perencana arus kas rumah tangga berpendapatan tidak tetap. Pertanyaan utama: **uang yang tersedia cukup sampai kapan dan kewajiban mana yang lebih dahulu belum tertutup?** Bahasa Indonesia, tampilan ponsel, Rupiah dibulatkan ke ribuan, tanpa koneksi bank, e-wallet, pembayaran, pinjaman, investasi, atau pelacak pihak ketiga.
 
 Alat perencanaan, bukan nasihat keuangan. Perencanaan tidak dapat menyelesaikan kekurangan uang yang struktural.
+
+## Fitur utama
+
+| Ringkasan: daya tahan dana & jalur uang | Label struktural yang jujur |
+|---|---|
+| ![Ringkasan](docs/img/01-beranda.png) | ![Struktural](docs/img/02-struktural.png) |
+| **Simulasi: coba perubahan sebelum memutuskan** | **Kalender kewajiban** |
+| ![Simulasi](docs/img/03-simulasi.png) | ![Kalender](docs/img/04-kalender.png) |
+
+Semua data di tangkapan layar adalah data fiktif (ruang uji).
 
 ## Menjalankan
 
@@ -12,7 +22,7 @@ Node.js 22.12+ (atau Node 24 LTS), npm, dan ruang disk sekitar 1 GB untuk depend
 npm install && npm run dev
 ```
 
-Buka http://127.0.0.1:3000. Setelah dependensi terpasang, cukup `npm run dev`. Untuk produksi lokal: `npm run build && npm start`. Tidak ada API key, basis data server, atau konfigurasi akun yang diperlukan. Aplikasi menggunakan Next.js App Router, TypeScript, React, Tailwind, dan localStorage per origin peramban. Data tidak dikirim ke server.
+Buka http://127.0.0.1:3000 untuk profil produk, atau langsung http://127.0.0.1:3000/app untuk aplikasinya. Setelah dependensi terpasang, cukup `npm run dev`. Untuk produksi lokal: `npm run build && npm start`. Tidak ada API key, basis data server, atau konfigurasi akun yang diperlukan. Aplikasi menggunakan Next.js App Router, TypeScript, React, Tailwind, dan localStorage per origin peramban. Data tidak dikirim ke server.
 
 ```sh
 npm test             # unit test mesin, pelabelan, snapshot, dan skenario
@@ -89,7 +99,7 @@ Enam keluarga: kurir/ojek, pedagang pasar, pekerja bangunan, petani, penjahit, s
 
 Hasil snapshot seed saat implementasi:
 
-| Rumah tangga | Label struktural | Runway konservatif | Deteksi bulanan / rata-rata / KasMusim | Lead time KasMusim | Alarm palsu KasMusim |
+| Rumah tangga | Label struktural | Runway konservatif | Deteksi bulanan / rata-rata / Ngebul | Lead time Ngebul | Alarm palsu Ngebul |
 |---|---|---:|---|---:|---:|
 | Rini, kurir | Tidak | ≥84 hari | 0 / 0 / 0 | — | 0 |
 | Agus, pedagang | Tidak | 5 hari | 0 / 5 / 5 | 5 hari | 9 |
@@ -106,7 +116,7 @@ Hasil snapshot seed saat implementasi:
 
 1. Catatan bulanan: proyeksi pendapatan biasa, periksa saldo akhir 28 hari; bila negatif, tandai kewajiban periode sebagai berisiko.
 2. Rata-rata bertanggal: pendapatan biasa dan titik tengah waktu masuk, evaluasi tiap tanggal jatuh tempo.
-3. KasMusim: batas bawah pendapatan dan waktu masuk terlambat, evaluasi tiap tanggal.
+3. Ngebul: batas bawah pendapatan dan waktu masuk terlambat, evaluasi tiap tanggal.
 
 Ketiganya memakai snapshot yang sama dan realisasi yang sama. Tidak menyetarakan pembanding sederhana ini dengan seluruh fitur YNAB/aplikasi lain. Realisasi tanpa snapshot sebelum periode tidak dinilai; UI menyebut jumlah observasi yang memenuhi syarat. Snapshot dibuat ketika membuka data/menyimpan perubahan rencana. Snapshot per hari bukan audit trail bertanda waktu independen; belum cukup untuk studi dampak yang ketat. Alarm palsu hanya dihitung untuk kewajiban yang sudah dapat diamati; kewajiban masa depan tidak diberi hasil palsu. Lead time adalah selisih hari dari snapshot peringatan ke jatuh tempo; tidak mengukur waktu pengguna membaca peringatan.
 
@@ -170,7 +180,7 @@ Pisahkan **masalah waktu/ketidakpastian** dan **kekurangan struktural** berdasar
 - **Bias baseline:** data pra-uji dari ingatan membuat sebelum–sesudah rawan bias. Pertimbangkan periode observasi prospektif tambahan, bukan menganggap baseline setara data check-in.
 - **Peringatan vs alarm palsu:** peringatan terlalu sering bisa diabaikan, terlalu jarang tidak membantu. Ukur keduanya bersama pengalaman pengguna.
 - **Pembayar:** kesediaan koperasi/organisasi membayar adalah hipotesis terbuka. Wawancara kualitatif bukan bukti pasar atau pendapatan yang sudah terjadi.
-- **Pembeda aplikasi anggaran:** KasMusim menonjolkan tanggal kewajiban, jendela pendapatan, skenario konservatif, dan label gap pokok. Aplikasi anggaran lain dapat memiliki fitur pendapatan tidak tetap. Uji apakah pengguna merasakan manfaat tambahan dibanding cara yang sudah mereka pakai; jangan mengklaim keunikan tanpa pembandingan produk langsung.
+- **Pembeda aplikasi anggaran:** Ngebul menonjolkan tanggal kewajiban, jendela pendapatan, skenario konservatif, dan label gap pokok. Aplikasi anggaran lain dapat memiliki fitur pendapatan tidak tetap. Uji apakah pengguna merasakan manfaat tambahan dibanding cara yang sudah mereka pakai; jangan mengklaim keunikan tanpa pembandingan produk langsung.
 - **Uji inti:** apakah keterlambatan berkurang pada keluarga yang masalahnya waktu/ketidakpastian, **tanpa menghitung klaim apa pun untuk keluarga struktural**?
 
 ## Batas MVP dan privasi
