@@ -1,18 +1,37 @@
 # Ngebul
 
-MVP perencana arus kas rumah tangga berpendapatan tidak tetap. Pertanyaan utama: **uang yang tersedia cukup sampai kapan dan kewajiban mana yang lebih dahulu belum tertutup?** Bahasa Indonesia, tampilan ponsel, Rupiah dibulatkan ke ribuan, tanpa koneksi bank, e-wallet, pembayaran, pinjaman, investasi, atau pelacak pihak ketiga.
+> Uang yang ada hari ini, cukup sampai kapan?
 
-Alat perencanaan, bukan nasihat keuangan. Perencanaan tidak dapat menyelesaikan kekurangan uang yang struktural.
+Ngebul adalah perencana arus kas untuk rumah tangga berpendapatan tidak tetap. Ia menunjukkan **tanggal pertama kebutuhan pokok belum tertutup** dan **kewajiban mana yang lebih dahulu terdampak**, memakai skenario konservatif, bukan janji. Bahasa Indonesia, Rupiah, ramah ponsel. Semua data tersimpan di perangkat; tidak ada akun, tidak ada koneksi rekening, tidak ada permintaan jaringan keluar.
+
+*Alat perencanaan, bukan nasihat keuangan. Perencanaan tidak dapat menyelesaikan kekurangan uang yang struktural.*
+
+![Ringkasan Ngebul](docs/img/01-beranda.png)
 
 ## Fitur utama
 
-| Ringkasan: daya tahan dana & jalur uang | Label struktural yang jujur |
+- **Daya tahan dana**: berapa hari kebutuhan pokok tetap tertutup, dengan jalur uang konservatif, biasa, dan rentang simulasi 500 putaran.
+- **Label struktural yang jujur**: bila pendapatan biasa tidak menutup kebutuhan pokok, aplikasi mengatakannya terus terang dan tidak memberi kesan "tinggal diatur".
+- **Kalender kewajiban**: tampilan bulan dan minggu, potensi denda, batas tenggang, dan urutan pembayaran yang dapat dijelaskan.
+- **Simulasi "bagaimana jika"**: kurangi pengeluaran fleksibel, tunda kewajiban yang diizinkan, atau tambah pendapatan, tanpa mengubah rencana utama.
+- **Check-in mingguan (± 2 menit)** dan **kalibrasi rentang** dari realisasi sungguhan.
+- **Evaluasi uji delapan minggu**: tiga mode pembanding, laporan terpisah untuk kelompok struktural.
+- **Privasi dahulu**: penyimpanan lokal, ekspor dan hapus data kapan saja, mode pendamping dengan izin, Content-Security-Policy ketat.
+- **Responsif dan mudah diakses**: dari 360 px hingga desktop, mode terang (bawaan) dan gelap, skip link, fokus terkunci di modal, kontras WCAG AA.
+
+| Label struktural | Simulasi |
 |---|---|
-| ![Ringkasan](docs/img/01-beranda.png) | ![Struktural](docs/img/02-struktural.png) |
-| **Simulasi: coba perubahan sebelum memutuskan** | **Kalender kewajiban** |
-| ![Simulasi](docs/img/03-simulasi.png) | ![Kalender](docs/img/04-kalender.png) |
+| ![Struktural](docs/img/02-struktural.png) | ![Simulasi](docs/img/03-simulasi.png) |
+| **Kalender kewajiban** | **Mode gelap** |
+| ![Kalender](docs/img/04-kalender.png) | ![Gelap](docs/img/06-gelap.png) |
+
+<p align="center"><img src="docs/img/05-mobile.png" alt="Tampilan ponsel" width="280"></p>
 
 Semua data di tangkapan layar adalah data fiktif (ruang uji).
+
+## Teknologi
+
+Next.js 15 (App Router) · React 19 · TypeScript · CSS biasa dengan token tema (Tailwind hanya untuk reset dasar) · lucide-react · Vitest · Playwright. Font di-host sendiri lewat `next/font`; tidak ada layanan pihak ketiga.
 
 ## Menjalankan
 
@@ -36,14 +55,22 @@ Pengujian UI memakai Playwright dan Chrome lokal (`CHROME_PATH` dapat diganti). 
 
 ## Struktur
 
-- `src/domain/types.ts`: rumah tangga, sumber pendapatan, dana, kewajiban, pengeluaran variabel, skenario, realisasi, check-in, periode uji, snapshot prakiraan.
-- `src/domain/config.ts`: seluruh parameter utama **asumsi, ganti dengan data nyata**.
+```
+src/
+  app/            App Router: page.tsx (profil produk), app/page.tsx (aplikasi),
+                  globals.css (profil + dasar), app.css (kulit aplikasi, token terang/gelap)
+  components/     App.tsx (UI dan formulir), Chart.tsx (grafik SVG), Reveal.tsx (animasi scroll)
+  domain/         mesin murni tanpa React/DOM: types, config, engine, evaluation, seed, privacy, dates
+public/brand/     logo, tanda, dan wordmark yang dipakai situs
+docs/img/         tangkapan layar README
+docs/audit/       laporan audit, model ancaman, keputusan, tindakan manual, rollback
+scripts/          backtest.ts (laporan berulang) dan smoke.mjs (uji UI)
+```
+
+- `src/domain/config.ts`: seluruh parameter utama, **asumsi, ganti dengan data nyata**.
 - `src/domain/engine.ts`: fungsi murni proyeksi, prioritas, Monte Carlo, struktural, kalibrasi, kesegaran, hasil peringatan.
-- `src/domain/evaluation.ts`: tiga mode pembanding dan metrik penggunaan.
 - `src/domain/seed.ts`: enam keluarga fiktif, masing-masing 14 minggu riwayat simulasi; tanggal acuan demo tetap 18 Oktober 2026 agar dapat diulang.
-- `src/components`: UI, formulir, grafik SVG yang dapat diakses tanpa layanan pihak ketiga.
-- `src/app`: App Router, metadata, dan gaya responsif.
-- `scripts/backtest.ts`: laporan yang dapat diulang.
+- Gaya aplikasi memakai satu skala jarak (4/8/12/16/24/32 px) dan satu set kontrol bersama (input, select, tombol setinggi 44 px).
 
 Modul domain tidak mengimpor React, DOM, Next.js, atau penyimpanan. Rumah tangga nyata memakai tanggal Asia/Jakarta. Demo tetap memakai tanggal acuan; jangan memakai angka demo untuk keputusan keluarga nyata.
 
@@ -193,9 +220,11 @@ Tidak ada pengiriman email/pesan, layanan keuangan, rekomendasi pinjaman, atau k
 
 ## Verifikasi implementasi
 
-- 28 unit test mesin/domain: tanggal tepat, dana terkunci/bertanggal, telat, konservatif, runway, prioritas, what-if, label struktural yang tidak hilang karena penghematan/penundaan, dana awal tidak menghapus label, stale data, seed deterministik, kalibrasi, lead time/alarm palsu, snapshot sebelum kejadian, izin pendamping, dan S1–S8.
-- Pemeriksaan TypeScript dan build produksi Next.js.
-- Smoke UI Chrome pada viewport desktop dan 390 px: semua skenario, label struktural, kalender, onboarding, check-in, evaluasi, penyimpanan setelah reload, izin pendamping, ekspor/hapus data, tanpa overflow halaman atau request pihak ketiga.
-- Screenshot hasil smoke disimpan di `artifacts/desktop.png` dan `artifacts/mobile.png` (diabaikan Git).
+- 28 unit test mesin/domain: tanggal tepat, dana terkunci/bertanggal, telat, konservatif, runway, prioritas, what-if, label struktural yang tidak hilang karena penghematan/penundaan, dana awal tidak masuk pendapatan, dan skenario S1–S8.
+- Pemeriksaan TypeScript dan build produksi Next.js; `npm audit` tanpa kerentanan.
+- Smoke UI Chrome pada desktop dan 390 px: semua skenario, label struktural, kalender, onboarding, check-in, evaluasi, penyimpanan setelah reload, izin pendamping, ekspor/hapus data, tanpa permintaan jaringan eksternal.
+- Pemeriksaan responsif pada 360, 390, 768, 1024, 1280, dan 1440 px: tanpa overflow horizontal, tanpa error console, target sentuh ≥ 40 px.
+- Modal: fokus terkunci di dalam dialog dan kembali ke pemicunya saat ditutup; isian hanya spasi ditolak.
+- Screenshot smoke disimpan di `artifacts/` (diabaikan Git).
 
 Pengujian otomatis tidak membuktikan kegunaan untuk peserta nyata, akurasi peluang, atau dampak keuangan. Lakukan uji delapan minggu dengan protokol di atas sebelum klaim manfaat.
