@@ -26,7 +26,7 @@ const refusals=[
 ];
 const faq=[
  ['Kenapa namanya Ngebul?','Dari ungkapan “dapur tetap ngebul”: asap dapur masih mengepul, artinya keluarga masih bisa makan. Itu juga ukuran yang dipakai aplikasi ini: kebutuhan pokok selalu dihitung lebih dulu.'],
- ['Perlu membuat akun?','Tidak. Buka aplikasinya dan mulai. Karena data hanya ada di peramban ini, berganti perangkat atau menghapus data situs akan menghilangkannya. Gunakan Ekspor di Data & pengaturan untuk menyimpan salinan.'],
+ ['Perlu membuat akun?','Tidak. Buka demonya dan mulai. Karena data hanya ada di peramban ini, berganti perangkat atau menghapus data situs akan menghilangkannya. Gunakan Ekspor di Data & pengaturan untuk menyimpan salinan.'],
  ['Apakah ini nasihat keuangan?',PRODUCT_NOTE+' Saran di dalamnya selalu berangkat dari jalur konservatif, bukan dari harapan.'],
  ['Kenapa pendapatan diisi sebagai rentang?','Karena itulah kenyataannya. Rata-rata menyembunyikan minggu sepi dan pembayaran yang mundur; rentang dan jendela tanggal menunjukkan kapan uang paling lambat datang.'],
  ['Apa arti “kekurangan struktural”?',`Ngebul membandingkan pendapatan biasa dengan kebutuhan pokok selama ${weeks} minggu. Bila lebih kecil, menunda atau berhemat hanya menggeser tanggal gagal. Aplikasi akan menyebutnya, dan mengingatkan bahwa bantuan di luar perencanaan mungkin diperlukan.`],
@@ -40,7 +40,7 @@ export default function Profile(){
  <header className="lp-head"><div className="lp-wrap lp-head-row">
   <Link href="/" className="lp-brand" aria-label="Ngebul, beranda"><img src="/brand/ngebul-mark.png" alt="" width={48} height={43}/><img src="/brand/ngebul-wordmark.png" alt="" width={112} height={32}/></Link>
   <nav aria-label="Bagian halaman" className="lp-nav"><a href="#cara-kerja">Cara kerja</a><a href="#prinsip">Prinsip</a><a href="#untuk-siapa">Untuk siapa</a><a href="#tanya-jawab">Tanya jawab</a></nav>
-  <Link href="/app" className="button primary">Buka aplikasi <ArrowRight size={16}/></Link>
+  <Link href="/app" className="button primary">Buka demo <ArrowRight size={16}/></Link>
  </div></header>
  <main id="isi" tabIndex={-1}>
  <section className="lp-wrap lp-hero">
